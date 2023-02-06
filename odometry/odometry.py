@@ -31,26 +31,7 @@ class DeadReckoner():
         self.right_port = right_port
 
 
-    def update_position(self, motor_odometry):
-        by_port = {ticks.port: ticks.ticks for ticks in motor_odometry.motor_ticks}
-
-        left  = by_port[self.left_port]
-        right = by_port[self.right_port]
-        if self.previous_encoders is None:
-            self.previous_encoders = dict()
-            self.previous_encoders["left"]  = left
-            self.previous_encoders["right"] = right
-            return
-
-
-        diff_left   = left-self.previous_encoders["left"]
-        diff_right  = right-self.previous_encoders["right"]
-        
-        self.previous_encoders["left"]  = left
-        self.previous_encoders["right"] = right
-
-        movement_vec = ticks_to_movement_vector(diff_left, diff_right, self.wheelbase, self.wheel_perimeter, self.ticks_per_rotation)
-
+    def update_position(self, movement_vec):
         self.position = loc2glob_pose(movement_vec, self.position)
 
 

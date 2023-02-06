@@ -55,3 +55,57 @@ class MotorOdometry:
             motor_ticks,
         )
 
+class ProximityMeasurement:
+    def __init__(self, distance):
+        self.distance = distance #int
+
+    def to_dict(self):
+        ret = dict()
+        ret['distance'] = self.distance
+        return ret
+
+    def get_topic(self):
+        return 'brickcontrol/sensor/proximity_measurement'
+
+    def get_topic_static():
+        return 'brickcontrol/sensor/proximity_measurement'
+
+    def from_dict(input_dict):
+        distance = input_dict['distance']
+        return ProximityMeasurement(
+            distance,
+        )
+
+class SensorMessage:
+    def __init__(self, timestamp, movement_vector, proximity_measurement):
+        self.timestamp = timestamp #int
+        self.movement_vector = movement_vector #list:double
+        self.proximity_measurement = proximity_measurement #struct:ProximityMeasurement
+
+    def to_dict(self):
+        ret = dict()
+        ret['timestamp'] = self.timestamp
+        ret['movement_vector'] = []
+        for data_point in self.movement_vector:
+            ret['movement_vector'].append(data_point)
+        ret['proximity_measurement'] = self.proximity_measurement.to_dict()
+        return ret
+
+    def get_topic(self):
+        return 'brickcontrol/sensor/inc_sensor_data'
+
+    def get_topic_static():
+        return 'brickcontrol/sensor/inc_sensor_data'
+
+    def from_dict(input_dict):
+        timestamp = input_dict['timestamp']
+        movement_vector = []
+        for data_point in input_dict['movement_vector']:
+            movement_vector.append(data_point)
+        proximity_measurement = ProximityMeasurement.from_dict(input_dict['proximity_measurement'])
+        return SensorMessage(
+            timestamp,
+            movement_vector,
+            proximity_measurement,
+        )
+
